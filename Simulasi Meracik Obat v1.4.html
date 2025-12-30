@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCraft Lab - Game Simulasi Farmasi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --secondary: #7ED321;
+            --danger: #E74C3C;
+            --warning: #F39C12;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --lab-bg: #F5F7FA;
+            --api-color: #E74C3C;
+            --diluent-color: #3498DB;
+            --binder-color: #9B59B6;
+            --lubricant-color: #F39C12;
+            --solvent-color: #1ABC9C;
+            --gold: #FFD700;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--lab-bg) 0%, #E8F4F8 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            color: var(--dark);
+            font-size: 24px;
+        }
+
+        .player-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: var(--light);
+            padding: 8px 15px;
+            border-radius: 10px;
+            min-width: 100px;
+        }
+
+        .stat-box h3 {
+            color: var(--dark);
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .stat-box p {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .navigation {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-count {
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Patient Section */
+        .patient-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .patient-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #6AB0F3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .patient-info h3 {
+            color: var(--dark);
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .patient-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Patient Stats */
+        .patient-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: #F8FAFC;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Recipe Cards */
+        .recipe-card {
+            background: #FFF9E6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 5px solid var(--warning);
+        }
+
+        .recipe-card h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recipe-content {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .recipe-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #EEE;
+        }
+
+        .recipe-item:last-child {
+            border-bottom: none;
+        }
+
+        .recipe-item-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .recipe-item-details {
+            flex: 1;
+        }
+
+        .recipe-item-name {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .recipe-item-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .recipe-item-quantity {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: #E8F4FF;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .instructions h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        /* Work Area */
+        .work-area {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .work-area h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .work-table {
+            flex: 1;
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #E0E6ED;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            align-items: start;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .work-placeholder {
+            grid-column: 1/-1;
+            text-align: center;
+            color: #999;
+            align-self: center;
+        }
+
+        .work-placeholder i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #EEE;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* Ingredients Panel */
+        .ingredients-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+        }
+
+        .ingredients-panel h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ingredients-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            background: white;
+            color: var(--dark);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .ingredient-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .ingredient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .ingredient-card.selected {
+            border-color: var(--secondary);
+            background: #F0FFF4;
+        }
+
+        .ingredient-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .ingredient-name {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .ingredient-desc {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .ingredient-quantity {
+            font-size: 11px;
+            color: white;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .ingredient-required {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warning);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3A80D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #6EC312;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #E08C00;
+            transform: translateY(-2px);
+        }
+
+        .btn-disabled {
+            background: #CCCCCC;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            transform: none;
+        }
+
+        /* Status Message */
+        .status-message {
+            background: #E8F4FF;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .status-message h4 {
+            color: var(--dark);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #6AB0F3);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .medicine-result {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .medicine-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 36px;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .star {
+            font-size: 30px;
+            color: #DDD;
+        }
+
+        .star.filled {
+            color: #FFD700;
+        }
+
+        .star.half {
+            position: relative;
+            color: #DDD;
+        }
+
+        .star.half:before {
+            content: '\f005';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+            color: #FFD700;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 15px;
+            background: #F8FAFC;
+            border-radius: 10px;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        /* Patient Selection Modal */
+        .patient-selection {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .patient-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .patient-select-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #EEE;
+            text-align: center;
+        }
+
+        .patient-select-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .patient-select-card.selected {
+            border-color: var(--secondary);
+            background: #F0FFF4;
+        }
+
+        .patient-select-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #6AB0F3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--dark);
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .credits {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes itemAdded {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .added {
+            animation: itemAdded 0.3s ease;
+        }
+
+        /* Level Progress */
+        .level-progress {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .level-progress-bar {
+            height: 15px;
+            background: #EEE;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .level-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .level-marker {
+            position: absolute;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--warning);
+        }
+
+        .level-number {
+            position: absolute;
+            bottom: -20px;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Bonus Notification */
+        .bonus-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s;
+            animation-fill-mode: forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Score Breakdown Detail */
+        .score-detail {
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .score-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #EEE;
+        }
+
+        .score-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Perbaikan UI Modal */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* Animasi untuk modal masuk */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            animation: slideInUp 0.3s ease;
+        }
+
+        /* Tombol skip untuk yang tidak sabar */
+        .skip-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .skip-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>PharmaCraft Lab - 100 Pasien</h1>
+                </div>
+            </div>
+            
+            <div class="player-stats">
+                <div class="stat-box">
+                    <h3>PASIEN</h3>
+                    <p id="current-patient">1/100</p>
+                </div>
+                <div class="stat-box">
+                    <h3>SCORE</h3>
+                    <p id="score">0</p>
+                </div>
+                <div class="stat-box">
+                    <h3>WAKTU</h3>
+                    <p id="timer">05:00</p>
+                </div>
+                <div class="stat-box">
+                    <h3>LEVEL</h3>
+                    <p id="level">1</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="patient-count">
+                <i class="fas fa-users"></i> Pasien: <span id="patient-counter">1</span>/100
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-patient">
+                    <i class="fas fa-chevron-left"></i> Sebelumnya
+                </button>
+                <button class="nav-btn" id="select-patient">
+                    <i class="fas fa-list"></i> Pilih Pasien
+                </button>
+                <button class="nav-btn" id="next-patient">
+                    Berikutnya <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Level Progress -->
+        <div class="level-progress">
+            <div>Progress: Pasien <span id="current-patient-num">1</span> dari 100</div>
+            <div class="level-progress-bar">
+                <div class="level-progress-fill" id="level-progress-fill" style="width: 1%"></div>
+                <div class="level-marker" style="left: 10%"></div>
+                <div class="level-number" style="left: 10%">10</div>
+                <div class="level-marker" style="left: 25%"></div>
+                <div class="level-number" style="left: 25%">25</div>
+                <div class="level-marker" style="left: 50%"></div>
+                <div class="level-number" style="left: 50%">50</div>
+                <div class="level-marker" style="left: 75%"></div>
+                <div class="level-number" style="left: 75%">75</div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Patient & Recipe Section -->
+            <div class="patient-section">
+                <div class="patient-header">
+                    <div class="patient-avatar pulse">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <div class="patient-info">
+                        <h3 id="patient-name">Budi Santoso</h3>
+                        <p id="patient-condition">Demam & Sakit Kepala</p>
+                        <p><strong>Umur:</strong> <span id="patient-age">32 tahun</span></p>
+                        <p><strong>Diagnosa:</strong> <span id="patient-diagnosis">Demam ringan, suhu 38°C</span></p>
+                    </div>
+                </div>
+
+                <!-- Patient Stats -->
+                <div class="patient-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="patient-severity">Sedang</div>
+                        <div class="stat-label">Tingkat Keparahan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="patient-urgency">70%</div>
+                        <div class="stat-label">Urgensi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="medicine-type">Tablet</div>
+                        <div class="stat-label">Jenis Sediaan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="ingredients-count">5</div>
+                        <div class="stat-label">Jumlah Bahan</div>
+                    </div>
+                </div>
+
+                <!-- Resep Alat -->
+                <div class="recipe-card">
+                    <h4><i class="fas fa-tools"></i> Resep Alat yang Diperlukan:</h4>
+                    <div class="recipe-content" id="tools-recipe">
+                        <!-- Alat akan dimuat di sini -->
+                    </div>
+                </div>
+
+                <!-- Resep Bahan -->
+                <div class="recipe-card">
+                    <h4><i class="fas fa-vial"></i> Resep Bahan Obat:</h4>
+                    <div class="recipe-content" id="ingredients-recipe">
+                        <!-- Bahan akan dimuat di sini -->
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Progress Peracikan</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h4><i class="fas fa-info-circle"></i> Cara Meracik:</h4>
+                    <ol id="instructions-list">
+                        <!-- Instruksi akan dimuat di sini -->
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Work Area -->
+            <div class="work-area">
+                <h3><i class="fas fa-flask"></i> Area Kerja</h3>
+                <div class="work-table" id="work-table">
+                    <div class="work-placeholder">
+                        <i class="fas fa-flask"></i>
+                        <p>Area kerja kosong. Pilih alat dan bahan dari panel bawah!</p>
+                    </div>
+                </div>
+                
+                <div class="status-message">
+                    <h4><i class="fas fa-clipboard-check"></i> Status:</h4>
+                    <p id="status-text">Siapkan alat dan bahan sesuai resep di samping</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredients Panel -->
+        <div class="ingredients-panel">
+            <h3><i class="fas fa-vial"></i> Pilih Alat & Bahan:</h3>
+            
+            <div class="ingredients-categories" id="categories">
+                <!-- Kategori akan dimuat di sini -->
+            </div>
+            
+            <div class="ingredients-grid" id="ingredients-grid">
+                <!-- Alat dan bahan akan dimuat di sini -->
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="check-recipe-btn">
+                    <i class="fas fa-check"></i> Periksa Resep
+                </button>
+                <button class="btn btn-secondary" id="mix-btn" disabled>
+                    <i class="fas fa-blender"></i> Mulai Meracik
+                </button>
+                <button class="btn btn-warning" id="quick-mix-btn">
+                    <i class="fas fa-bolt"></i> Racik Cepat
+                </button>
+                <button class="btn" id="clear-btn" style="background: #95A5A6; color: white;">
+                    <i class="fas fa-trash"></i> Hapus Pilihan
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Game Edukasi Farmasi - 100 Pasien Berbeda untuk Tantangan Tak Terbatas!</p>
+            <div class="credits">
+                <p><strong>Dibuat oleh: Reski Ardiansyah</strong></p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>ar0236879@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>085657398446</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal Level Complete -->
+    <div class="modal" id="level-complete-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Peracikan Berhasil!</h2>
+                <p>Obat telah dibuat sesuai resep</p>
+                <button class="modal-close" id="close-level-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="medicine-result">
+                    <div class="medicine-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h3 id="medicine-name">Tablet Parasetamol 500mg</h3>
+                    <p id="medicine-for">Untuk: Budi Santoso</p>
+                    <p style="color: #666; font-size: 14px;">Pasien ke: <span id="patient-number">1</span> dari 100</p>
+                </div>
+                
+                <div class="stars" id="star-rating">
+                    <i class="fas fa-star star" id="star1"></i>
+                    <i class="fas fa-star star" id="star2"></i>
+                    <i class="fas fa-star star" id="star3"></i>
+                </div>
+                
+                <div class="score-breakdown">
+                    <div class="score-item">
+                        <div class="score-value" id="accuracy-score">0%</div>
+                        <div class="score-label">Akurasi</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value" id="time-score">0</div>
+                        <div class="score-label">Bonus Waktu</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value" id="total-score">0</div>
+                        <div class="score-label">Total Skor</div>
+                    </div>
+                </div>
+                
+                <div class="score-detail">
+                    <div class="score-detail-item">
+                        <span>Jumlah Bahan Benar:</span>
+                        <span id="correct-items">0</span>
+                    </div>
+                    <div class="score-detail-item">
+                        <span>Total Bahan Dibutuhkan:</span>
+                        <span id="total-items">0</span>
+                    </div>
+                    <div class="score-detail-item">
+                        <span>Persentase Akurasi:</span>
+                        <span id="accuracy-percent">0%</span>
+                    </div>
+                    <div class="score-detail-item">
+                        <span>Waktu Tersisa:</span>
+                        <span id="time-left">0 detik</span>
+                    </div>
+                    <div class="score-detail-item">
+                        <span>Bonus Waktu:</span>
+                        <span id="time-bonus-detail">0</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <h4>Progress Keseluruhan:</h4>
+                    <p style="font-size: 14px; color: #666;" id="overall-progress">
+                        Anda telah membantu 1 dari 100 pasien
+                    </p>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="next-patient-btn">
+                        <i class="fas fa-user-plus"></i> Pasien Berikutnya
+                    </button>
+                    <button class="btn btn-secondary" id="select-new-patient-btn">
+                        <i class="fas fa-list"></i> Pilih Pasien Lain
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pilih Pasien -->
+    <div class="modal" id="patient-select-modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">
+                <h2>Pilih Pasien</h2>
+                <p>100 Pasien Menunggu Bantuan Anda!</p>
+                <button class="modal-close" id="close-select-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3>Daftar Pasien (1-100)</h3>
+                    <p style="color: #666;">Pilih pasien yang ingin Anda tangani</p>
+                </div>
+                
+                <div class="patient-selection">
+                    <div class="patient-list" id="patient-list">
+                        <!-- Daftar pasien akan dimuat di sini -->
+                    </div>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="confirm-patient-btn" disabled>
+                        <i class="fas fa-check"></i> Tangani Pasien Ini
+                    </button>
+                    <button class="btn" id="back-to-game-btn" style="background: #95A5A6; color: white;">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Data dengan 100 Pasien
+        const gameData = {
+            currentPatient: 1,
+            totalPatients: 100,
+            score: 0,
+            timeLeft: 300,
+            startTime: 300,
+            timerInterval: null,
+            selectedItems: [],
+            patients: [],
+            selectedPatientId: null,
+            
+            // Data base untuk generate 100 pasien
+            patientNames: [
+                "Budi Santoso", "Sari Dewi", "Ahmad Wijaya", "Rina Melati", "Dodi Pratama",
+                "Maya Sari", "Joko Susilo", "Linda Hartati", "Agus Setiawan", "Dewi Lestari",
+                "Hendra Gunawan", "Siska Purnama", "Rudi Hartono", "Ani Wijayanti", "Eko Prasetyo",
+                "Mona Lisa", "Bambang Sudrajat", "Citra Anggraini", "Fajar Nugroho", "Gita Maharani",
+                "Hadi Sutrisno", "Intan Permata", "Jaya Makmur", "Kartika Sari", "Lukman Hakim",
+                "Meta Dewi", "Nugroho Susanto", "Oki Setiawan", "Putri Ayu", "Rangga Pratama",
+                "Santi Wulandari", "Tono Wijaya", "Umi Kulsum", "Vino Gani", "Wulan Sari",
+                "Yoga Pratama", "Zahra Fitri", "Andi Saputra", "Bella Maisyah", "Cakra Wibawa",
+                "Dinda Permata", "Erik Kurniawan", "Fani Amelia", "Guntur Bumi", "Hesti Riani",
+                "Irfan Maulana", "Jeni Arista", "Kevin Ardian", "Lia Marlina", "Miko Chandra"
+            ],
+            
+            conditions: [
+                "Demam & Sakit Kepala", "Batuk & Pilek", "Nyeri Sendi", "Alergi Kulit", 
+                "Asma Bronkial", "Hipertensi", "Diabetes Mellitus", "Maag Akut",
+                "Diare Akut", "Infeksi Telinga", "Radang Tenggorokan", "Migrain",
+                "Vertigo", "Insomnia", "Anemia", "Rematik", "Sakit Gigi", "Flu Berat",
+                "Bronkitis", "Pneumonia", "Tifus", "DBD", "Cacar Air", "Campak",
+                "Hepatitis A", "Gastritis", "Kolestrol Tinggi", "Asam Urat", "Osteoporosis",
+                "Artritis", "Sinusitis", "Konjungtivitis", "Dermatitis", "Psoriasis",
+                "Eksim", "Jerawat Parah", "Infeksi Saluran Kemih", "Batu Ginjal",
+                "Anxiety Disorder", "Depresi Ringan", "Pusing Berat", "Mual Muntah",
+                "Sembelit", "Wasir", "Varises", "Luka Bakar", "Patah Tulang",
+                "Dislokasi Sendi", "Keseleo", "Memar Luas"
+            ],
+            
+            medicineTypes: [
+                "Tablet", "Kapsul", "Sirup", "Salep", "Krim", "Gel", "Injeksi",
+                "Drop", "Suppositoria", "Patch", "Inhaler", "Spray", "Suspensi",
+                "Emulsi", "Serbuk", "Granul", "Kaplet", "Tablet Hisap", "Tablet Kunyah",
+                "Tablet Effervescent"
+            ],
+            
+            // SEMUA BAHAN YANG TERSEDIA DI GAME (DIPERBESAR)
+            activeIngredients: [
+                { name: "Parasetamol", type: "Analgesik", color: "#E74C3C", icon: "fas fa-tablets" },
+                { name: "Ibuprofen", type: "NSAID", color: "#E67E22", icon: "fas fa-pain" },
+                { name: "Amoksisilin", type: "Antibiotik", color: "#C0392B", icon: "fas fa-bacteria" },
+                { name: "Cetirizine", type: "Antihistamin", color: "#3498DB", icon: "fas fa-allergy" },
+                { name: "Omeprazole", type: "Antasid", color: "#1ABC9C", icon: "fas fa-stomach" },
+                { name: "Metformin", type: "Antidiabetes", color: "#27AE60", icon: "fas fa-syringe" },
+                { name: "Amlodipine", type: "Antihipertensi", color: "#9B59B6", icon: "fas fa-heartbeat" },
+                { name: "Salbutamol", type: "Bronkodilator", color: "#2980B9", icon: "fas fa-lungs" },
+                { name: "Simvastatin", type: "Antikolesterol", color: "#F39C12", icon: "fas fa-heart" },
+                { name: "Diazepam", type: "Anxiolytic", color: "#8E44AD", icon: "fas fa-brain" },
+                { name: "Loratadine", type: "Antihistamin", color: "#3498DB", icon: "fas fa-allergy" },
+                { name: "Ciprofloxacin", type: "Antibiotik", color: "#C0392B", icon: "fas fa-bacteria" },
+                { name: "Aspirin", type: "Analgesik", color: "#E74C3C", icon: "fas fa-tablets" },
+                { name: "Vitamin C", type: "Vitamin", color: "#E67E22", icon: "fas fa-apple-alt" },
+                { name: "Vitamin D", type: "Vitamin", color: "#F39C12", icon: "fas fa-sun" }
+            ],
+            
+            excipients: [
+                { name: "Laktosa", type: "Pengisi", color: "#ECF0F1", icon: "fas fa-snowflake" },
+                { name: "Amilum", type: "Penghancur", color: "#F1C40F", icon: "fas fa-seedling" },
+                { name: "PVP", type: "Pengikat", color: "#9B59B6", icon: "fas fa-atom" },
+                { name: "Mg Stearat", type: "Pelicin", color: "#7F8C8D", icon: "fas fa-oil-can" },
+                { name: "Sukrosa", type: "Pemanis", color: "#D35400", icon: "fas fa-candy-cane" },
+                { name: "Talk", type: "Pelicin", color: "#BDC3C7", icon: "fas fa-mountain" },
+                { name: "CMC-Na", type: "Pengental", color: "#16A085", icon: "fas fa-vial" },
+                { name: "Silika", type: "Penyerap", color: "#95A5A6", icon: "fas fa-tint-slash" },
+                { name: "Gelatin", type: "Pengikat", color: "#D35400", icon: "fas fa-capsules" },
+                { name: "Mannitol", type: "Pengisi", color: "#3498DB", icon: "fas fa-snowflake" },
+                { name: "Maltodekstrin", type: "Pengisi", color: "#ECF0F1", icon: "fas fa-snowflake" },
+                { name: "Selulosa", type: "Pengisi", color: "#F1C40F", icon: "fas fa-seedling" },
+                { name: "Titanium Dioksida", type: "Pewarna", color: "#BDC3C7", icon: "fas fa-palette" },
+                { name: "Kalsium Karbonat", type: "Pengisi", color: "#7F8C8D", icon: "fas fa-mountain" },
+                { name: "Asam Sitrat", type: "Pengasam", color: "#27AE60", icon: "fas fa-lemon" }
+            ],
+            
+            solvents: [
+                { name: "Aqua Destilata", type: "Pelarut", color: "#3498DB", icon: "fas fa-tint" },
+                { name: "Etanol 70%", type: "Pelarut", color: "#16A085", icon: "fas fa-wine-bottle" },
+                { name: "Propilen Glikol", type: "Pelarut", color: "#F39C12", icon: "fas fa-oil-can" },
+                { name: "Gliserin", type: "Humektan", color: "#2ECC71", icon: "fas fa-tint" },
+                { name: "Minyak Zaitun", type: "Basis", color: "#27AE60", icon: "fas fa-oil-can" },
+                { name: "Minyak Kelapa", type: "Basis", color: "#D35400", icon: "fas fa-oil-can" },
+                { name: "Air Murni", type: "Pelarut", color: "#3498DB", icon: "fas fa-tint" },
+                { name: "Isopropil Alkohol", type: "Pelarut", color: "#16A085", icon: "fas fa-wine-bottle" }
+            ],
+            
+            tools: [
+                { name: "Neraca Analitik", type: "Penimbang", color: "#3498DB", icon: "fas fa-balance-scale" },
+                { name: "Mortir dan Stamper", type: "Penghalus", color: "#9B59B6", icon: "fas fa-mortar-pestle" },
+                { name: "Gelas Ukur", type: "Pengukur", color: "#1ABC9C", icon: "fas fa-flask" },
+                { name: "Hot Plate", type: "Pemanas", color: "#E74C3C", icon: "fas fa-fire" },
+                { name: "Corong Kaca", type: "Penuang", color: "#3498DB", icon: "fas fa-funnel" },
+                { name: "Ayakan Mesh", type: "Penyaring", color: "#F39C12", icon: "fas fa-filter" },
+                { name: "Spatula", type: "Pencampur", color: "#7F8C8D", icon: "fas fa-utensil-spoon" },
+                { name: "Penangas Air", type: "Pemanas", color: "#2980B9", icon: "fas fa-water" },
+                { name: "Mesin Cetak Tablet", type: "Pencetak", color: "#2C3E50", icon: "fas fa-compress-alt" },
+                { name: "Homogenizer", type: "Pencampur", color: "#8E44AD", icon: "fas fa-blender" },
+                { name: "Pipet", type: "Pengukur", color: "#3498DB", icon: "fas fa-tint" },
+                { name: "Tabung Reaksi", type: "Wadah", color: "#1ABC9C", icon: "fas fa-flask" },
+                { name: "Buret", type: "Pengukur", color: "#3498DB", icon: "fas fa-tint" },
+                { name: "Kaca Arloji", type: "Wadah", color: "#BDC3C7", icon: "fas fa-circle" },
+                { name: "Krusibel", type: "Wadah", color: "#7F8C8D", icon: "fas fa-circle" }
+            ],
+            
+            categories: [
+                { id: "all", name: "Semua Item", icon: "fas fa-th" },
+                { id: "tools", name: "Alat", icon: "fas fa-tools" },
+                { id: "api", name: "Bahan Aktif", icon: "fas fa-pills" },
+                { id: "eksipien", name: "Eksipien", icon: "fas fa-atom" },
+                { id: "solvent", name: "Pelarut", icon: "fas fa-tint" },
+                { id: "packaging", name: "Kemasan", icon: "fas fa-box" }
+            ],
+            
+            // ITEM TAMBAHAN UNTUK MENGACAK
+            extraItems: [
+                { name: "Sarung Tangan", type: "APD", color: "#95A5A6", icon: "fas fa-hands", category: "tools" },
+                { name: "Masker", type: "APD", color: "#BDC3C7", icon: "fas fa-head-side-mask", category: "tools" },
+                { name: "Kacamata Lab", type: "APD", color: "#3498DB", icon: "fas fa-glasses", category: "tools" },
+                { name: "Jas Lab", type: "APD", color: "#2C3E50", icon: "fas fa-user-md", category: "tools" },
+                { name: "Pinset", type: "Alat", color: "#7F8C8D", icon: "fas fa-cut", category: "tools" },
+                { name: "Gunting", type: "Alat", color: "#95A5A6", icon: "fas fa-cut", category: "tools" },
+                { name: "Termometer", type: "Alat", color: "#E74C3C", icon: "fas fa-thermometer", category: "tools" },
+                { name: "pH Meter", type: "Alat", color: "#9B59B6", icon: "fas fa-vial", category: "tools" },
+                { name: "Mixer", type: "Alat", color: "#8E44AD", icon: "fas fa-blender", category: "tools" },
+                { name: "Centrifuge", type: "Alat", color: "#2C3E50", icon: "fas fa-redo-alt", category: "tools" },
+                { name: "Vitamin B Kompleks", type: "Vitamin", color: "#F39C12", icon: "fas fa-capsules", category: "api" },
+                { name: "Zinc", type: "Mineral", color: "#BDC3C7", icon: "fas fa-atom", category: "api" },
+                { name: "Kalsium", type: "Mineral", color: "#ECF0F1", icon: "fas fa-bone", category: "api" },
+                { name: "Magnesium", type: "Mineral", color: "#F1C40F", icon: "fas fa-atom", category: "api" },
+                { name: "Pewarna Merah", type: "Pewarna", color: "#E74C3C", icon: "fas fa-palette", category: "eksipien" },
+                { name: "Pewarna Hijau", type: "Pewarna", color: "#27AE60", icon: "fas fa-palette", category: "eksipien" },
+                { name: "Pewarna Kuning", type: "Pewarna", color: "#F1C40F", icon: "fas fa-palette", category: "eksipien" },
+                { name: "Essen Strawberry", type: "Penyedap", color: "#E74C3C", icon: "fas fa-ice-cream", category: "eksipien" },
+                { name: "Essen Vanilla", type: "Penyedap", color: "#D35400", icon: "fas fa-ice-cream", category: "eksipien" },
+                { name: "Essen Coklat", type: "Penyedap", color: "#8B4513", icon: "fas fa-ice-cream", category: "eksipien" }
+            ]
+        };
+
+        // Generate 100 Pasien
+        function generatePatients() {
+            const patients = [];
+            
+            for (let i = 1; i <= 100; i++) {
+                const randomName = gameData.patientNames[Math.floor(Math.random() * gameData.patientNames.length)];
+                const randomCondition = gameData.conditions[Math.floor(Math.random() * gameData.conditions.length)];
+                const randomMedicine = gameData.medicineTypes[Math.floor(Math.random() * gameData.medicineTypes.length)];
+                const randomAge = Math.floor(Math.random() * 60) + 18;
+                
+                // Generate severity based on patient number (increasing difficulty)
+                let severity = "Ringan";
+                let urgency = Math.floor(Math.random() * 30) + 40;
+                
+                if (i > 25 && i <= 50) {
+                    severity = "Sedang";
+                    urgency = Math.floor(Math.random() * 30) + 50;
+                } else if (i > 50 && i <= 75) {
+                    severity = "Berat";
+                    urgency = Math.floor(Math.random() * 30) + 60;
+                } else if (i > 75) {
+                    severity = "Kritis";
+                    urgency = Math.floor(Math.random() * 30) + 70;
+                }
+                
+                // Select random active ingredients (1-3)
+                const numActiveIngredients = Math.min(3, Math.floor(i / 30) + 1);
+                const selectedAPIs = [];
+                for (let j = 0; j < numActiveIngredients; j++) {
+                    const randomAPI = gameData.activeIngredients[Math.floor(Math.random() * gameData.activeIngredients.length)];
+                    if (!selectedAPIs.find(api => api.name === randomAPI.name)) {
+                        selectedAPIs.push(randomAPI);
+                    }
+                }
+                
+                // Select random excipients (2-5)
+                const numExcipients = Math.min(5, Math.floor(i / 20) + 2);
+                const selectedExcipients = [];
+                for (let j = 0; j < numExcipients; j++) {
+                    const randomExc = gameData.excipients[Math.floor(Math.random() * gameData.excipients.length)];
+                    if (!selectedExcipients.find(exc => exc.name === randomExc.name)) {
+                        selectedExcipients.push(randomExc);
+                    }
+                }
+                
+                // Select random tools (3-6)
+                const numTools = Math.min(6, Math.floor(i / 15) + 3);
+                const selectedTools = [];
+                for (let j = 0; j < numTools; j++) {
+                    const randomTool = gameData.tools[Math.floor(Math.random() * gameData.tools.length)];
+                    if (!selectedTools.find(tool => tool.name === randomTool.name)) {
+                        selectedTools.push(randomTool);
+                    }
+                }
+                
+                // Generate diagnosis
+                const diagnoses = [
+                    "Infeksi virus ringan", "Infeksi bakteri", "Peradangan kronis", "Alergi musiman",
+                    "Hipertensi stadium 1", "Diabetes tipe 2", "Gangguan pencernaan", "Infeksi saluran pernafasan",
+                    "Gangguan kecemasan", "Nyeri muskuloskeletal", "Infeksi kulit", "Gangguan metabolisme",
+                    "Penyakit autoimun", "Gangguan neurologis", "Trauma fisik", "Keracunan makanan",
+                    "Defisiensi vitamin", "Gangguan hormonal", "Penyakit degeneratif", "Gangguan imunologis"
+                ];
+                const randomDiagnosis = diagnoses[Math.floor(Math.random() * diagnoses.length)];
+                
+                // Generate instructions
+                const instructions = [
+                    `1. Timbang semua bahan sesuai takaran resep`,
+                    `2. Campur ${selectedAPIs[0]?.name} dengan eksipien`,
+                    `3. Gunakan ${selectedTools[0]?.name} untuk proses pencampuran`,
+                    `4. Pastikan semua bahan tercampur homogen`,
+                    `5. Gunakan ${selectedTools[1]?.name} untuk proses lanjutan`,
+                    `6. Lakukan kontrol kualitas sederhana`,
+                    `7. Kemas dalam wadah yang sesuai`,
+                    `8. Beri label dan instruksi penggunaan`
+                ];
+                
+                patients.push({
+                    id: i,
+                    name: randomName,
+                    condition: randomCondition,
+                    diagnosis: randomDiagnosis,
+                    age: `${randomAge} tahun`,
+                    medicine: `${randomMedicine} ${selectedAPIs[0]?.name}`,
+                    severity: severity,
+                    urgency: urgency,
+                    medicineType: randomMedicine,
+                    ingredientsCount: selectedAPIs.length + selectedExcipients.length,
+                    
+                    // Recipe components
+                    activeIngredients: selectedAPIs,
+                    excipients: selectedExcipients,
+                    solvents: i % 3 === 0 ? [gameData.solvents[0]] : [],
+                    tools: selectedTools,
+                    
+                    // Instructions
+                    instructions: instructions.slice(0, Math.min(8, Math.floor(i / 12) + 4))
+                });
+            }
+            
+            return patients;
+        }
+
+        // Initialize Game
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate 100 patients
+            gameData.patients = generatePatients();
+            
+            initGame();
+            startTimer();
+            setupEventListeners();
+            renderPatientSelection();
+        });
+
+        function initGame() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            // Reset data
+            gameData.selectedItems = [];
+            gameData.timeLeft = 300;
+            gameData.startTime = 300;
+            gameData.selectedPatientId = patient.id;
+            
+            // Update display
+            document.getElementById('current-patient').textContent = `${gameData.currentPatient}/${gameData.totalPatients}`;
+            document.getElementById('current-patient-num').textContent = gameData.currentPatient;
+            document.getElementById('patient-counter').textContent = gameData.currentPatient;
+            document.getElementById('score').textContent = gameData.score;
+            document.getElementById('level').textContent = Math.ceil(gameData.currentPatient / 10);
+            updateTimerDisplay();
+            
+            // Update level progress
+            const progressPercent = (gameData.currentPatient / gameData.totalPatients) * 100;
+            document.getElementById('level-progress-fill').style.width = `${progressPercent}%`;
+            
+            // Render patient info
+            renderPatientInfo();
+            
+            // Render recipes
+            renderToolsRecipe();
+            renderIngredientsRecipe();
+            renderInstructions();
+            
+            // Render categories and items
+            renderCategories();
+            renderItems();
+            
+            // Clear work table
+            clearWorkTable();
+            
+            // Update status
+            updateStatus(`Tangani ${patient.name} - ${patient.condition}`);
+            
+            // Update progress
+            updateProgress();
+        }
+
+        function startTimer() {
+            clearInterval(gameData.timerInterval);
+            
+            gameData.timerInterval = setInterval(() => {
+                gameData.timeLeft--;
+                updateTimerDisplay();
+                
+                if (gameData.timeLeft <= 0) {
+                    clearInterval(gameData.timerInterval);
+                    alert("Waktu habis! Pasien menunggu terlalu lama.");
+                    initGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameData.timeLeft / 60);
+            const seconds = gameData.timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function renderPatientInfo() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            document.getElementById('patient-name').textContent = patient.name;
+            document.getElementById('patient-condition').textContent = patient.condition;
+            document.getElementById('patient-age').textContent = patient.age;
+            document.getElementById('patient-diagnosis').textContent = patient.diagnosis;
+            document.getElementById('patient-severity').textContent = patient.severity;
+            document.getElementById('patient-urgency').textContent = `${patient.urgency}%`;
+            document.getElementById('medicine-type').textContent = patient.medicineType;
+            document.getElementById('ingredients-count').textContent = patient.ingredientsCount;
+            
+            // Update medicine name in modal
+            document.getElementById('medicine-name').textContent = patient.medicine;
+            document.getElementById('medicine-for').textContent = `Untuk: ${patient.name}`;
+            document.getElementById('patient-number').textContent = patient.id;
+        }
+
+        function renderToolsRecipe() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const container = document.getElementById('tools-recipe');
+            container.innerHTML = '';
+            
+            patient.tools.forEach(tool => {
+                const item = document.createElement('div');
+                item.className = 'recipe-item';
+                
+                item.innerHTML = `
+                    <div class="recipe-item-icon" style="background: ${tool.color};">
+                        <i class="${tool.icon}"></i>
+                    </div>
+                    <div class="recipe-item-details">
+                        <div class="recipe-item-name">${tool.name}</div>
+                        <div class="recipe-item-desc">${tool.type} - Diperlukan untuk proses peracikan</div>
+                    </div>
+                    <div class="recipe-item-quantity">1 unit</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        function renderIngredientsRecipe() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const container = document.getElementById('ingredients-recipe');
+            container.innerHTML = '';
+            
+            // Combine all ingredients
+            const allIngredients = [
+                ...patient.activeIngredients,
+                ...patient.excipients,
+                ...patient.solvents
+            ];
+            
+            allIngredients.forEach(ingredient => {
+                const item = document.createElement('div');
+                item.className = 'recipe-item';
+                
+                item.innerHTML = `
+                    <div class="recipe-item-icon" style="background: ${ingredient.color};">
+                        <i class="${ingredient.icon}"></i>
+                    </div>
+                    <div class="recipe-item-details">
+                        <div class="recipe-item-name">${ingredient.name}</div>
+                        <div class="recipe-item-desc">${ingredient.type} - ${ingredient.name === 'Aqua Destilata' ? 'Pelarut utama' : 'Komponen penting'}</div>
+                    </div>
+                    <div class="recipe-item-quantity">${ingredient.name.includes('Aqua') ? '50 mL' : '100 mg'}</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        function renderInstructions() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const container = document.getElementById('instructions-list');
+            container.innerHTML = '';
+            
+            patient.instructions.forEach(instruction => {
+                const li = document.createElement('li');
+                li.textContent = instruction;
+                container.appendChild(li);
+            });
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+            
+            gameData.categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = `category-btn ${category.id === 'all' ? 'active' : ''}`;
+                button.dataset.category = category.id;
+                button.innerHTML = `<i class="${category.icon}"></i> ${category.name}`;
+                
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.category-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Filter items
+                    renderItems(category.id);
+                });
+                
+                container.appendChild(button);
+            });
+        }
+
+        // FUNGSI BARU: Mengacak semua item di game
+        function getAllGameItems() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            // 1. Ambil semua item yang DIPERLUKAN oleh pasien
+            const requiredItems = [
+                ...patient.tools.map(tool => ({ 
+                    ...tool, 
+                    category: "tools",
+                    quantity: "1 unit",
+                    required: true
+                })),
+                ...patient.activeIngredients.map(ing => ({ 
+                    ...ing, 
+                    category: "api",
+                    quantity: `${Math.floor(Math.random() * 500) + 100} mg`,
+                    required: true
+                })),
+                ...patient.excipients.map(exc => ({ 
+                    ...exc, 
+                    category: "eksipien",
+                    quantity: `${Math.floor(Math.random() * 200) + 50} mg`,
+                    required: true
+                })),
+                ...patient.solvents.map(sol => ({ 
+                    ...sol, 
+                    category: "solvent",
+                    quantity: `${Math.floor(Math.random() * 100) + 20} mL`,
+                    required: true
+                })),
+                { name: "Botol Obat", type: "Kemasan", color: "#2C3E50", icon: "fas fa-prescription-bottle", category: "packaging", quantity: "1 buah", required: true },
+                { name: "Etiket", type: "Label", color: "#E74C3C", icon: "fas fa-tag", category: "packaging", quantity: "1 lembar", required: true }
+            ];
+            
+            // 2. Ambil item-item TIDAK DIPERLUKAN dari database game (dalam jumlah acak)
+            const allGameItems = [
+                ...gameData.activeIngredients,
+                ...gameData.excipients,
+                ...gameData.solvents,
+                ...gameData.tools,
+                ...gameData.extraItems
+            ];
+            
+            // 3. Filter item yang TIDAK diperlukan oleh pasien ini
+            const requiredNames = requiredItems.map(item => item.name);
+            const extraItemsPool = allGameItems.filter(item => !requiredNames.includes(item.name));
+            
+            // 4. Ambil 10-15 item acak dari pool (untuk mengacak)
+            const numExtraItems = Math.floor(Math.random() * 6) + 10; // 10-15 item
+            const shuffledExtraItems = [...extraItemsPool].sort(() => Math.random() - 0.5).slice(0, numExtraItems);
+            
+            // 5. Tambahkan quantity untuk item extra
+            const extraItems = shuffledExtraItems.map(item => ({
+                ...item,
+                quantity: item.category === "tools" ? "1 unit" : 
+                         item.category === "solvent" ? `${Math.floor(Math.random() * 100) + 20} mL` :
+                         `${Math.floor(Math.random() * 300) + 50} mg`,
+                required: false
+            }));
+            
+            // 6. Gabungkan required items dan extra items
+            const allItems = [...requiredItems, ...extraItems];
+            
+            // 7. Acak urutan semua item
+            return allItems.sort(() => Math.random() - 0.5);
+        }
+
+        function renderItems(category = 'all') {
+            const container = document.getElementById('ingredients-grid');
+            container.innerHTML = '';
+            
+            // Gunakan fungsi baru untuk mendapatkan semua item yang diacak
+            const allItems = getAllGameItems();
+            
+            // Filter berdasarkan kategori jika bukan "all"
+            const filteredItems = category === 'all' 
+                ? allItems 
+                : allItems.filter(item => item.category === category);
+            
+            filteredItems.forEach(item => {
+                const isRequired = item.required;
+                const isSelected = gameData.selectedItems.some(selected => selected.id === (item.id || item.name));
+                
+                const card = document.createElement('div');
+                card.className = `ingredient-card ${isSelected ? 'selected' : ''}`;
+                card.dataset.id = item.id || item.name;
+                card.dataset.category = item.category;
+                card.dataset.name = item.name;
+                card.dataset.required = isRequired;
+                
+                card.innerHTML = `
+                    ${isRequired ? '<div class="ingredient-required">⭐</div>' : ''}
+                    <div class="ingredient-icon" style="background: ${item.color};">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <div class="ingredient-name">${item.name}</div>
+                    <div class="ingredient-desc">${item.type || item.category}</div>
+                    <div class="ingredient-quantity" style="background: ${item.color};">${item.quantity || '1 unit'}</div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    const itemId = item.id || item.name;
+                    
+                    if (isSelected) {
+                        // Remove from selection
+                        gameData.selectedItems = gameData.selectedItems.filter(selected => selected.id !== itemId);
+                        card.classList.remove('selected');
+                        removeFromWorkTable(itemId);
+                    } else {
+                        // Add to selection
+                        gameData.selectedItems.push({
+                            id: itemId,
+                            name: item.name,
+                            category: item.category,
+                            color: item.color,
+                            icon: item.icon,
+                            required: isRequired
+                        });
+                        card.classList.add('selected');
+                        addToWorkTable(item);
+                    }
+                    
+                    updateButtonStates();
+                    updateProgress();
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        function addToWorkTable(item) {
+            const workTable = document.getElementById('work-table');
+            
+            // Remove placeholder
+            const placeholder = workTable.querySelector('.work-placeholder');
+            if (placeholder) {
+                workTable.removeChild(placeholder);
+            }
+            
+            // Check if item already exists
+            const existingItem = workTable.querySelector(`[data-id="${item.id || item.name}"]`);
+            if (existingItem) return;
+            
+            // Create item element
+            const itemElement = document.createElement('div');
+            itemElement.className = 'ingredient-card added';
+            itemElement.dataset.id = item.id || item.name;
+            itemElement.style.cursor = 'default';
+            
+            itemElement.innerHTML = `
+                <div class="ingredient-icon" style="background: ${item.color};">
+                    <i class="${item.icon}"></i>
+                </div>
+                <div class="ingredient-name">${item.name}</div>
+                <div class="ingredient-desc" style="font-size: 10px;">${item.type || item.category}</div>
+            `;
+            
+            workTable.appendChild(itemElement);
+            
+            // Remove animation class
+            setTimeout(() => {
+                itemElement.classList.remove('added');
+            }, 300);
+        }
+
+        function removeFromWorkTable(itemId) {
+            const workTable = document.getElementById('work-table');
+            const itemElement = workTable.querySelector(`[data-id="${itemId}"]`);
+            
+            if (itemElement) {
+                workTable.removeChild(itemElement);
+            }
+            
+            // If work table is empty, show placeholder
+            if (workTable.children.length === 0) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'work-placeholder';
+                placeholder.innerHTML = `
+                    <i class="fas fa-flask"></i>
+                    <p>Area kerja kosong. Pilih alat dan bahan dari panel bawah!</p>
+                `;
+                workTable.appendChild(placeholder);
+            }
+        }
+
+        function clearWorkTable() {
+            const workTable = document.getElementById('work-table');
+            workTable.innerHTML = '';
+            
+            const placeholder = document.createElement('div');
+            placeholder.className = 'work-placeholder';
+            placeholder.innerHTML = `
+                <i class="fas fa-flask"></i>
+                <p>Area kerja kosong. Pilih alat dan bahan dari panel bawah!</p>
+            `;
+            workTable.appendChild(placeholder);
+            
+            gameData.selectedItems = [];
+            renderItems();
+            updateButtonStates();
+            updateProgress();
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status-text').textContent = message;
+        }
+
+        function updateProgress() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const allRequired = [
+                ...patient.tools.map(t => t.name),
+                ...patient.activeIngredients.map(i => i.name),
+                ...patient.excipients.map(e => e.name),
+                ...patient.solvents.map(s => s.name),
+                "Botol Obat",
+                "Etiket"
+            ];
+            
+            const selectedNames = gameData.selectedItems.map(item => item.name);
+            const selectedCount = allRequired.filter(name => selectedNames.includes(name)).length;
+            const totalRequired = allRequired.length;
+            const percentage = Math.round((selectedCount / totalRequired) * 100);
+            
+            document.getElementById('progress-percent').textContent = `${percentage}%`;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            
+            // Update status based on progress
+            if (percentage === 0) {
+                updateStatus(`Siapkan alat dan bahan untuk ${patient.name}`);
+            } else if (percentage < 50) {
+                updateStatus(`Menyiapkan... ${selectedCount}/${totalRequired} item`);
+            } else if (percentage < 100) {
+                updateStatus(`Hampir selesai... ${selectedCount}/${totalRequired} item`);
+            } else {
+                updateStatus("✓ Semua alat dan bahan sudah siap! Klik 'Periksa Resep'");
+            }
+        }
+
+        function updateButtonStates() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const allRequired = [
+                ...patient.tools.map(t => t.name),
+                ...patient.activeIngredients.map(i => i.name),
+                ...patient.excipients.map(e => e.name),
+                ...patient.solvents.map(s => s.name),
+                "Botol Obat",
+                "Etiket"
+            ];
+            
+            const selectedNames = gameData.selectedItems.map(item => item.name);
+            const selectedCount = allRequired.filter(name => selectedNames.includes(name)).length;
+            const totalRequired = allRequired.length;
+            
+            // Enable check recipe button only if all required items are selected
+            const checkBtn = document.getElementById('check-recipe-btn');
+            checkBtn.disabled = selectedCount < totalRequired;
+            
+            // Enable mix button jika SEMUA item required sudah dipilih
+            const mixBtn = document.getElementById('mix-btn');
+            mixBtn.disabled = selectedCount < totalRequired;
+            
+            // Enable quick mix jika at least half items are selected
+            const quickMixBtn = document.getElementById('quick-mix-btn');
+            quickMixBtn.disabled = selectedCount < Math.ceil(totalRequired / 2);
+        }
+
+        function showBonusNotification(message, type = "primary") {
+            // Remove any existing notification
+            const existingNotification = document.querySelector('.bonus-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = 'bonus-notification';
+            
+            // Set color based on type
+            let bgColor = "linear-gradient(135deg, #4A90E2, #6AB0F3)";
+            if (type === "secondary") bgColor = "linear-gradient(135deg, #7ED321, #6EC312)";
+            if (type === "warning") bgColor = "linear-gradient(135deg, #F39C12, #E08C00)";
+            if (type === "danger") bgColor = "linear-gradient(135deg, #E74C3C, #C0392B)";
+            if (type === "gold") bgColor = "linear-gradient(135deg, #FFD700, #FFA500)";
+            
+            notification.style.background = bgColor;
+            notification.innerHTML = `
+                <i class="fas fa-star"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 2000);
+        }
+
+        function addScoreBonus(points, reason) {
+            gameData.score += points;
+            document.getElementById('score').textContent = gameData.score;
+            
+            // Show bonus notification
+            showBonusNotification(`+${points} poin! ${reason}`, points >= 100 ? "gold" : "secondary");
+        }
+
+        function checkRecipe() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            const allRequired = [
+                ...patient.tools.map(t => t.name),
+                ...patient.activeIngredients.map(i => i.name),
+                ...patient.excipients.map(e => e.name),
+                ...patient.solvents.map(s => s.name),
+                "Botol Obat",
+                "Etiket"
+            ];
+            
+            const selectedNames = gameData.selectedItems.map(item => item.name);
+            const missingItems = allRequired.filter(name => !selectedNames.includes(name));
+            
+            if (missingItems.length === 0) {
+                // All items are selected
+                updateStatus("✓ Semua alat dan bahan sudah lengkap! Klik 'Mulai Meracik'");
+                document.getElementById('mix-btn').disabled = false;
+                
+                // Add bonus points for perfect recipe
+                addScoreBonus(50, "Lengkapi resep dengan sempurna");
+                
+                // Add checkmark to progress
+                document.getElementById('progress-percent').innerHTML = 
+                    `100% <i class="fas fa-check" style="color: var(--secondary);"></i>`;
+            } else {
+                // Some items are missing
+                updateStatus(`❌ Masih ada ${missingItems.length} item yang belum dipilih`);
+                document.getElementById('mix-btn').disabled = true;
+            }
+        }
+
+        function mixMedicine() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            // Langsung tampilkan animasi mixing yang sangat singkat
+            const workTable = document.getElementById('work-table');
+            workTable.innerHTML = '';
+            
+            const mixingAnimation = document.createElement('div');
+            mixingAnimation.style.gridColumn = '1/-1';
+            mixingAnimation.style.textAlign = 'center';
+            mixingAnimation.style.padding = '30px';
+            
+            mixingAnimation.innerHTML = `
+                <div style="font-size: 48px; color: var(--primary); margin-bottom: 20px;">
+                    <i class="fas fa-blender fa-spin"></i>
+                </div>
+                <h3 style="color: var(--dark); margin-bottom: 10px;">Meracik ${patient.medicine}...</h3>
+            `;
+            
+            workTable.appendChild(mixingAnimation);
+            
+            // Disable buttons during mixing
+            document.getElementById('check-recipe-btn').disabled = true;
+            document.getElementById('mix-btn').disabled = true;
+            document.getElementById('quick-mix-btn').disabled = true;
+            document.getElementById('clear-btn').disabled = true;
+            
+            // Loading cepat (300ms saja)
+            setTimeout(() => {
+                completeLevel();
+            }, 300);
+        }
+
+        function quickMix() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            // Automatically select remaining items
+            const allRequired = [
+                ...patient.tools.map(t => ({ name: t.name, type: "tool", color: t.color, icon: t.icon })),
+                ...patient.activeIngredients.map(i => ({ name: i.name, type: "api", color: i.color, icon: i.icon })),
+                ...patient.excipients.map(e => ({ name: e.name, type: "eksipien", color: e.color, icon: e.icon })),
+                ...patient.solvents.map(s => ({ name: s.name, type: "solvent", color: s.color, icon: s.icon })),
+                { name: "Botol Obat", type: "packaging", color: "#2C3E50", icon: "fas fa-prescription-bottle" },
+                { name: "Etiket", type: "packaging", color: "#E74C3C", icon: "fas fa-tag" }
+            ];
+            
+            const selectedNames = gameData.selectedItems.map(item => item.name);
+            const missingItems = allRequired.filter(item => !selectedNames.includes(item.name));
+            
+            // Add missing items to selection
+            missingItems.forEach(item => {
+                if (!gameData.selectedItems.some(selected => selected.name === item.name)) {
+                    gameData.selectedItems.push({
+                        id: item.name,
+                        name: item.name,
+                        category: item.type,
+                        color: item.color,
+                        icon: item.icon,
+                        required: true
+                    });
+                    
+                    addToWorkTable(item);
+                }
+            });
+            
+            // Update display
+            renderItems();
+            updateButtonStates();
+            updateProgress();
+            
+            // Show message
+            updateStatus("✓ Mode cepat: Semua item telah dipilih otomatis!");
+            document.getElementById('mix-btn').disabled = false;
+            
+            // Add penalty for using quick mix (less score than manual selection)
+            addScoreBonus(25, "Mode cepat (penalti -25 poin)");
+        }
+
+        function calculateScore() {
+            const patient = gameData.patients[gameData.currentPatient - 1];
+            
+            // Get all required items
+            const allRequired = [
+                ...patient.tools.map(t => t.name),
+                ...patient.activeIngredients.map(i => i.name),
+                ...patient.excipients.map(e => e.name),
+                ...patient.solvents.map(s => s.name),
+                "Botol Obat",
+                "Etiket"
+            ];
+            
+            // Get selected items
+            const selectedNames = gameData.selectedItems.map(item => item.name);
+            
+            // Calculate accuracy (how many correct items selected)
+            const correctItems = allRequired.filter(name => selectedNames.includes(name)).length;
+            const totalItems = allRequired.length;
+            const accuracyPercentage = Math.round((correctItems / totalItems) * 100);
+            
+            // Calculate time bonus (REVISI: lebih mudah mendapatkan poin waktu tinggi)
+            const timeUsed = gameData.startTime - gameData.timeLeft;
+            
+            // REVISI: Sistem waktu yang lebih adil untuk mencapai 100
+            let timePoints = 0;
+            if (timeUsed <= 45) { // ≤ 45 detik
+                timePoints = 40;
+            } else if (timeUsed <= 90) { // ≤ 1.5 menit
+                timePoints = 35;
+            } else if (timeUsed <= 120) { // ≤ 2 menit
+                timePoints = 30;
+            } else if (timeUsed <= 180) { // ≤ 3 menit
+                timePoints = 25;
+            } else if (timeUsed <= 240) { // ≤ 4 menit
+                timePoints = 20;
+            } else { // > 4 menit
+                timePoints = 15;
+            }
+            
+            // REVISI: Bobot yang memungkinkan mencapai 100
+            let totalScore = Math.round((accuracyPercentage * 0.6) + (timePoints * 0.4));
+            
+            // Jika SEMUA bahan benar DAN waktu cepat, langsung beri 100
+            if (correctItems === totalItems && timeUsed <= 120) { // 2 menit
+                totalScore = 100;
+            }
+            
+            // Ensure score is between 0-100
+            totalScore = Math.max(0, Math.min(100, totalScore));
+            
+            return {
+                correctItems: correctItems,
+                totalItems: totalItems,
+                accuracyPercentage: accuracyPercentage,
+                timeUsed: timeUsed,
+                timePoints: timePoints,
+                totalScore: totalScore
+            };
+        }
+
+        function getStarRating(score) {
+            let stars = 0;
+            let halfStar = false;
+            
+            if (score >= 10 && score <= 30) {
+                stars = 1;
+            } else if (score >= 31 && score <= 80) {
+                stars = 2;
+            } else if (score >= 81 && score <= 90) {
+                stars = 2;
+                halfStar = true;
+            } else if (score >= 91 && score <= 100) {
+                stars = 3;
+            }
+            
+            return { stars, halfStar };
+        }
+
+        function displayStarRating(stars, halfStar) {
+            const starContainer = document.getElementById('star-rating');
+            starContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 3; i++) {
+                const star = document.createElement('i');
+                star.className = 'fas fa-star star';
+                
+                if (i <= stars) {
+                    star.classList.add('filled');
+                }
+                
+                // Handle half star for 2.5 stars
+                if (halfStar && i === 3) {
+                    star.className = 'fas fa-star star half';
+                }
+                
+                starContainer.appendChild(star);
+            }
+        }
+
+        function completeLevel() {
+            clearInterval(gameData.timerInterval);
+            
+            // Calculate score based on accuracy and time
+            const scoreData = calculateScore();
+            
+            // Update modal dengan data skor - lebih cepat tanpa delay
+            const updateModalScores = () => {
+                document.getElementById('accuracy-score').textContent = `${scoreData.accuracyPercentage}%`;
+                document.getElementById('time-score').textContent = `+${scoreData.timePoints}`;
+                document.getElementById('total-score').textContent = `${scoreData.totalScore}`;
+                
+                document.getElementById('correct-items').textContent = `${scoreData.correctItems}`;
+                document.getElementById('total-items').textContent = `${scoreData.totalItems}`;
+                document.getElementById('accuracy-percent').textContent = `${scoreData.accuracyPercentage}%`;
+                document.getElementById('time-left').textContent = `${gameData.timeLeft} detik`;
+                document.getElementById('time-bonus-detail').textContent = `+${scoreData.timePoints}`;
+                
+                // Add score to total
+                addScoreBonus(scoreData.totalScore, "Selesai meracik obat");
+                
+                // Update overall progress
+                document.getElementById('overall-progress').textContent = 
+                    `Anda telah membantu ${gameData.currentPatient} dari 100 pasien`;
+                
+                // Get star rating
+                const { stars, halfStar } = getStarRating(scoreData.totalScore);
+                displayStarRating(stars, halfStar);
+                
+                // Show success message for perfect score
+                if (scoreData.totalScore >= 90) {
+                    const medicineResult = document.querySelector('.medicine-result');
+                    // Hapus badge sebelumnya jika ada
+                    const existingBadge = document.querySelector('.perfect-score-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    
+                    const perfectBadge = document.createElement('div');
+                    perfectBadge.className = 'perfect-score-badge';
+                    perfectBadge.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #FFD700, #FFA500); color: white; padding: 8px 15px; border-radius: 20px; margin-top: 10px; display: inline-block; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);">
+                            <i class="fas fa-crown"></i> NILAI HAMPIR SEMPURNA!
+                        </div>
+                    `;
+                    medicineResult.appendChild(perfectBadge);
+                }
+            };
+            
+            // Update segera tanpa delay
+            updateModalScores();
+            
+            // Tampilkan modal
+            document.getElementById('level-complete-modal').style.display = 'flex';
+        }
+
+        function nextPatient() {
+            // Sembunyikan modal skor terlebih dahulu
+            document.getElementById('level-complete-modal').style.display = 'none';
+            
+            // Hapus badge "Nilai Hampir Sempurna" jika ada
+            const existingBadge = document.querySelector('.perfect-score-badge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            
+            // PERBAIKAN UTAMA: Reset ke awal jika sudah selesai semua level
+            if (gameData.currentPatient >= gameData.totalPatients) {
+                // Tampilkan pesan kemenangan
+                showVictoryModal();
+            } else {
+                gameData.currentPatient++;
+                initGame();
+                startTimer();
+            }
+        }
+
+        function prevPatient() {
+            if (gameData.currentPatient > 1) {
+                gameData.currentPatient--;
+                initGame();
+                startTimer();
+            } else {
+                showBonusNotification("Anda sudah di pasien pertama!", "warning");
+            }
+        }
+
+        function showVictoryModal() {
+            // Buat modal kemenangan
+            const victoryModal = document.createElement('div');
+            victoryModal.className = 'modal';
+            victoryModal.id = 'victory-modal';
+            victoryModal.style.display = 'flex';
+            
+            victoryModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #FFD700, #FFA500);">
+                        <h2>🎉 SELAMAT! 🎉</h2>
+                        <p>Anda telah menyelesaikan semua 100 pasien!</p>
+                        <button class="modal-close" id="close-victory-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="medicine-result">
+                            <div class="medicine-icon" style="background: linear-gradient(135deg, #FFD700, #FFA500);">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>GAME COMPLETED!</h3>
+                            <p>Total Skor Akumulasi: <strong>${gameData.score}</strong></p>
+                            
+                            ${gameData.score >= 8000 ? 
+                                '<div style="background: linear-gradient(135deg, #FFD700, #FFA500); color: white; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center;">' +
+                                '<i class="fas fa-crown"></i> AHLI FARMASI LEGENDARY!' +
+                                '</div>' : 
+                              gameData.score >= 5000 ? 
+                                '<div style="background: linear-gradient(135deg, #27AE60, #2ECC71); color: white; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center;">' +
+                                '<i class="fas fa-star"></i> AHLI FARMASI HEBAT!' +
+                                '</div>' :
+                                '<div style="background: linear-gradient(135deg, #3498DB, #2980B9); color: white; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center;">' +
+                                '<i class="fas fa-medal"></i> FARMASI BERBAKAT!' +
+                                '</div>'
+                            }
+                            
+                            <div class="score-detail">
+                                <div class="score-detail-item">
+                                    <span>Total Pasien Ditolong:</span>
+                                    <span>100/100</span>
+                                </div>
+                                <div class="score-detail-item">
+                                    <span>Level Tertinggi:</span>
+                                    <span>10</span>
+                                </div>
+                                <div class="score-detail-item">
+                                    <span>Total Waktu Bermain:</span>
+                                    <span>${Math.floor((gameData.totalPatients * 300 - gameData.timeLeft) / 60)} menit</span>
+                                </div>
+                            </div>
+                            
+                            <div class="action-buttons" style="margin-top: 30px;">
+                                <button class="btn btn-primary" id="restart-game-btn" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
+                                    <i class="fas fa-redo"></i> Main Lagi dari Awal
+                                </button>
+                                <button class="btn btn-secondary" id="continue-playing-btn">
+                                    <i class="fas fa-play-circle"></i> Lanjutkan dengan Skor Ini
+                                </button>
+                                <button class="btn" id="back-to-game-victory" style="background: #95A5A6; color: white;">
+                                    <i class="fas fa-times"></i> Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(victoryModal);
+            
+            // Event listeners untuk modal kemenangan
+            document.getElementById('restart-game-btn').addEventListener('click', () => {
+                // Reset semua data
+                gameData.currentPatient = 1;
+                gameData.score = 0;
+                victoryModal.remove();
+                initGame();
+                startTimer();
+            });
+            
+            document.getElementById('continue-playing-btn').addEventListener('click', () => {
+                // Tetap di pasien terakhir tapi bisa pilih pasien lain
+                victoryModal.remove();
+                selectPatient();
+            });
+            
+            document.getElementById('back-to-game-victory').addEventListener('click', () => {
+                victoryModal.remove();
+            });
+            
+            document.getElementById('close-victory-modal').addEventListener('click', () => {
+                victoryModal.remove();
+            });
+            
+            // Klik di luar modal untuk menutup
+            victoryModal.addEventListener('click', (event) => {
+                if (event.target === victoryModal) {
+                    victoryModal.remove();
+                }
+            });
+        }
+
+        function renderPatientSelection() {
+            const container = document.getElementById('patient-list');
+            container.innerHTML = '';
+            
+            gameData.patients.forEach(patient => {
+                const card = document.createElement('div');
+                card.className = `patient-select-card ${patient.id === gameData.selectedPatientId ? 'selected' : ''}`;
+                card.dataset.id = patient.id;
+                
+                // Determine icon based on severity
+                let icon = "fa-user-injured";
+                if (patient.severity === "Ringan") icon = "fa-smile";
+                if (patient.severity === "Sedang") icon = "fa-meh";
+                if (patient.severity === "Berat") icon = "fa-frown";
+                if (patient.severity === "Kritis") icon = "fa-sad-cry";
+                
+                card.innerHTML = `
+                    <div class="patient-select-avatar">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <h4>${patient.name}</h4>
+                    <p style="font-size: 12px; color: #666;">${patient.condition}</p>
+                    <div style="margin-top: 5px;">
+                        <span style="font-size: 11px; background: ${patient.severity === 'Kritis' ? '#E74C3C' : patient.severity === 'Berat' ? '#F39C12' : patient.severity === 'Sedang' ? '#3498DB' : '#2ECC71'}; color: white; padding: 2px 8px; border-radius: 10px;">
+                            ${patient.severity}
+                        </span>
+                    </div>
+                    <p style="font-size: 10px; color: #888; margin-top: 5px;">Pasien #${patient.id}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    // Remove selected class from all cards
+                    document.querySelectorAll('.patient-select-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked card
+                    card.classList.add('selected');
+                    
+                    // Enable confirm button
+                    document.getElementById('confirm-patient-btn').disabled = false;
+                    
+                    // Store selected patient ID
+                    gameData.selectedPatientId = patient.id;
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        function selectPatient() {
+            document.getElementById('patient-select-modal').style.display = 'flex';
+        }
+
+        function confirmPatientSelection() {
+            if (gameData.selectedPatientId) {
+                gameData.currentPatient = gameData.selectedPatientId;
+                document.getElementById('patient-select-modal').style.display = 'none';
+                initGame();
+                startTimer();
+            }
+        }
+
+        function setupEventListeners() {
+            // Check recipe button
+            document.getElementById('check-recipe-btn').addEventListener('click', checkRecipe);
+            
+            // Mix button
+            document.getElementById('mix-btn').addEventListener('click', function() {
+                if (!this.disabled) {
+                    mixMedicine();
+                } else {
+                    updateStatus("❌ Belum semua bahan dipilih. Gunakan 'Periksa Resep' dulu!");
+                }
+            });
+            
+            // Quick mix button
+            document.getElementById('quick-mix-btn').addEventListener('click', quickMix);
+            
+            // Clear button
+            document.getElementById('clear-btn').addEventListener('click', clearWorkTable);
+            
+            // Navigation buttons
+            document.getElementById('prev-patient').addEventListener('click', prevPatient);
+            document.getElementById('next-patient').addEventListener('click', nextPatient);
+            document.getElementById('select-patient').addEventListener('click', selectPatient);
+            
+            // Modal buttons
+            document.getElementById('next-patient-btn').addEventListener('click', nextPatient);
+            document.getElementById('select-new-patient-btn').addEventListener('click', selectPatient);
+            document.getElementById('confirm-patient-btn').addEventListener('click', confirmPatientSelection);
+            
+            // Tombol untuk menutup modal
+            document.getElementById('close-level-modal').addEventListener('click', () => {
+                document.getElementById('level-complete-modal').style.display = 'none';
+            });
+            
+            document.getElementById('close-select-modal').addEventListener('click', () => {
+                document.getElementById('patient-select-modal').style.display = 'none';
+            });
+            
+            document.getElementById('back-to-game-btn').addEventListener('click', () => {
+                document.getElementById('patient-select-modal').style.display = 'none';
+            });
+            
+            // PERBAIKAN 2: Tambahkan event untuk klik di luar modal untuk menutup
+            window.addEventListener('click', (event) => {
+                const levelModal = document.getElementById('level-complete-modal');
+                const selectModal = document.getElementById('patient-select-modal');
+                
+                if (event.target === levelModal) {
+                    levelModal.style.display = 'none';
+                }
+                if (event.target === selectModal) {
+                    selectModal.style.display = 'none';
+                }
+            });
+            
+            // PERBAIKAN 3: Tambahkan event untuk tombol ESC untuk menutup modal
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    document.getElementById('level-complete-modal').style.display = 'none';
+                    document.getElementById('patient-select-modal').style.display = 'none';
+                    
+                    // Juga tutup modal victory jika ada
+                    const victoryModal = document.getElementById('victory-modal');
+                    if (victoryModal) {
+                        victoryModal.remove();
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
